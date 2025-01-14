@@ -14,7 +14,6 @@ public struct Item
 public class Gambler : MonoBehaviour
 {
     [Header("Items")]
-    public Item guarenteedWinner;
     [SerializeField] private Item[] items;
 
     [Header("Settings")]
@@ -35,11 +34,16 @@ public class Gambler : MonoBehaviour
     private Coroutine rollCoroutine;
     private SpriteRenderer[] spawnedItems;
 
-    // Spawn in max possible prefabs
-    // Set spawned prefabs to random items
-    // Set winner item to specefic item
+    // Spawn in atleast 3 prefabs
+    // Devide gamble area into spawned amount
+    
 
     private void Start()
+    {
+        SpawnItems();
+    }
+
+    private void SpawnItems()
     {
         // Spawn items for later use
         spawnedItems = new SpriteRenderer[maxFillerItems];
@@ -51,7 +55,7 @@ public class Gambler : MonoBehaviour
 
     public void Roll()
     {
-        Item winnerItem = guarenteedWinner.Equals(null) ? items[Random.Range(0, items.Length)] : guarenteedWinner;
+        Item winnerItem = items[Random.Range(0, items.Length)];
         int winnerIndex = Random.Range(minFillerItems, maxFillerItems);
         float winnerPosition = ItemSpacing * winnerIndex;
 
@@ -85,12 +89,12 @@ public class Gambler : MonoBehaviour
         float t = 0;
         float duration = Random.Range(minDuration, maxDuration);
         float startPosition = ItemParent.localPosition.x;
-        float endPosition = -winnerPosition;
+        float endPosition = -winnerPosition + Random.Range(-ItemSpacing / 2, ItemSpacing / 2);
 
         while (t < duration)
         {
             t += Time.deltaTime;
-            ItemParent.localPosition = new Vector2(Mathf.Lerp(startPosition, endPosition, rollCurve.Evaluate(t)), 0);//Vector3.Lerp(startPosition, endPosition, t / duration);
+            ItemParent.localPosition = new Vector2(Mathf.Lerp(startPosition, endPosition, rollCurve.Evaluate(t / duration)), 0);
             yield return null;
         }
 
